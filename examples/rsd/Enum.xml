@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<msd javaPackage="com.test.portal.service" version="1.0">
+    <enums>
+        <enum name="UserStatus" description="用户状态">
+            <field name="NORMAL" value="1" description="正常"/>
+            <field name="LOCKED" value="2" description="锁定"/>
+            <field name="DISABLED" value="3" description="禁用"/>
+        </enum>
+    </enums>
+</msd>

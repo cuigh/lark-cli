@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.lark.com/rsd/1.0"
+           xmlns="http://www.lark.com/rsd/1.0"
+           elementFormDefault="qualified">
+
+    <xs:annotation>
+        <xs:documentation>
+            编写此文件的目的:
+            1. 增加约束
+            2. 加快rsd文件编写速度
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:simpleType name="FieldModifierAttrType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration  value="required"/>
+            <xs:enumeration value="optional"/>
+            <xs:enumeration value="repeated"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="FieldAttrType">
+        <xs:union memberTypes="PascalNamePattern">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="double"/>
+                    <xs:enumeration value="float"/>
+                    <xs:enumeration value="int32"/>
+                    <xs:enumeration value="int64"/>
+                    <xs:enumeration value="uInt32"/>
+                    <xs:enumeration value="uInt64"/>
+                    <xs:enumeration value="fixed32"/>
+                    <xs:enumeration value="fixed64"/>
+                    <xs:enumeration value="sFixed32"/>
+                    <xs:enumeration value="sFixed64"/>
+                    <xs:enumeration value="sInt32"/>
+                    <xs:enumeration value="sInt64"/>
+                    <xs:enumeration value="bool"/>
+                    <xs:enumeration value="string"/>
+                    <xs:enumeration value="object"/>
+                    <xs:enumeration value="bytes"/>
+                    <xs:enumeration value="enum"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
+    <xs:simpleType name="PascalNamePattern">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Z]($[A-Z]|[\w])*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="FullNamePattern">
+        <xs:restriction base="xs:string">
+            <!-- 包名或者类全限定名匹配 -->
+            <xs:pattern value="([a-z][a-z0-9]*\.)*([A-Z]($[A-Z]|[\w])*|\*)"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="FreeFullNamePattern">
+        <xs:restriction base="xs:string">
+            <!-- 自由包名匹配 -->
+            <xs:pattern value="(\w*\.)*(\w*|\*)"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="ConstantPattern">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Z]([A-Z_])*[A-Z]"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="FieldAttrOrder">
+        <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Lang">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="java"/>
+            <xs:enumeration value="c#"/>
+            <xs:enumeration value="go"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="Import">
+        <xs:attribute name="lang" type="Lang"/>
+        <xs:attribute name="path" type="FullNamePattern" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="Imports">
+        <xs:sequence maxOccurs="unbounded" minOccurs="0">
+            <xs:element name="import" type="Import"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Error">
+        <xs:attribute name="name" type="ConstantPattern" use="required"/>
+        <xs:attribute name="code" type="xs:integer" use="required"/>
+        <xs:attribute name="message" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="Errors">
+        <xs:sequence maxOccurs="unbounded" minOccurs="1">
+            <xs:element name="error" type="Error"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- service相关类型定义 -->
+    <xs:simpleType name="ExtendsPattern">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="([A-Z]($[A-Z]|[\w])*)|([A-Z]($[A-Z]|[\w])*(\[[A-Z]($[A-Z]|[\w])*\]))"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="ReqRespField">
+        <xs:attribute name="modifier" type="FieldModifierAttrType"/>
+        <xs:attribute name="type" type="FieldAttrType" use="required"/>
+        <xs:attribute name="name" type="PascalNamePattern" use="required"/>
+        <xs:attribute name="order" type="FieldAttrOrder"/>
+        <xs:attribute name="description" type="xs:string"/>
+        <xs:attribute name="kind" type="xs:string"/>
+        <xs:attribute name="inherits" type="xs:boolean"/>
+    </xs:complexType>
+
+    <xs:complexType name="Request">
+        <xs:sequence maxOccurs="unbounded" minOccurs="1">
+            <xs:element name="field" type="ReqRespField"/>
+        </xs:sequence>
+        <xs:attribute name="extends" type="ExtendsPattern"/>
+        <xs:attribute name="multiple" type="xs:boolean"/>
+    </xs:complexType>
+
+    <xs:complexType name="Response">
+        <xs:sequence maxOccurs="unbounded" minOccurs="0">
+            <xs:element name="field" type="ReqRespField"/>
+        </xs:sequence>
+        <xs:attribute name="extends" type="ExtendsPattern"/>
+        <xs:attribute name="multiple" type="xs:boolean"/>
+    </xs:complexType>
+
+    <xs:complexType name="Method">
+        <xs:sequence maxOccurs="1">
+            <xs:element name="request" type="Request" minOccurs="0"/>
+            <xs:element name="response" type="Response" minOccurs="0"/>
+            <xs:element name="errors" type="Errors" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="PascalNamePattern" use="required"/>
+        <xs:attribute name="alias" type="xs:string"/>
+        <xs:attribute name="description" type="xs:string"/>
+    </xs:complexType>
+    
+    <xs:complexType name="Service">
+        <xs:sequence>
+            <xs:element name="imports" type="Imports" maxOccurs="1" minOccurs="0"/>
+            <xs:element name="method" type="Method" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="PascalNamePattern" use="required"/>
+        <xs:attribute name="alias" type="xs:string"/>
+        <xs:attribute name="description" type="xs:string"/>
+    </xs:complexType>
+    <!-- type相关类型定义 -->
+    <xs:complexType name="TypeField">
+        <xs:attribute name="modifier" type="FieldModifierAttrType" use="required"/>
+        <xs:attribute name="type" type="FieldAttrType" use="required"/>
+        <xs:attribute name="name" type="PascalNamePattern" use="required"/>
+        <xs:attribute name="order" type="FieldAttrOrder" use="required"/>
+        <xs:attribute name="description" type="xs:string"/>
+        <xs:attribute name="javaType" type="PascalNamePattern"/>
+        <xs:attribute name="goType" type="FullNamePattern"/>
+        <xs:attribute name="kind" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="Type">
+        <xs:sequence maxOccurs="unbounded" minOccurs="1">
+            <xs:element name="field" type="TypeField"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="PascalNamePattern" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="required"/>
+        <xs:attribute name="extends" type="ExtendsPattern"/>
+    </xs:complexType>
+
+    <xs:complexType name="ProtoImport">
+        <xs:attribute name="path" type="FreeFullNamePattern" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="ProtoImports">
+        <xs:sequence maxOccurs="unbounded" minOccurs="0">
+            <xs:element name="protoImport" type="ProtoImport"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Types">
+        <xs:sequence>
+            <xs:element name="protoImports" type="ProtoImports" maxOccurs="1" minOccurs="0"/>
+            <xs:element name="imports" type="Imports" maxOccurs="1" minOccurs="0"/>
+            <xs:element name="type" type="Type"  maxOccurs="unbounded" minOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- enum相关类型定义 -->
+    <xs:complexType name="EnumField">
+        <xs:attribute name="description" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="value" type="xs:integer" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="Enum">
+        <xs:sequence maxOccurs="unbounded" minOccurs="1">
+            <xs:element name="field" type="EnumField"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="PascalNamePattern" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="Enums">
+        <xs:sequence maxOccurs="unbounded" minOccurs="1">
+            <xs:element name="enum" type="Enum"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- msd元素 -->
+    <xs:simpleType name="Version">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="0.2"/>
+            <xs:enumeration value="1.0"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:element name="msd">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="service" type="Service" maxOccurs="1" minOccurs="1"/>
+                <xs:element name="types" type="Types" maxOccurs="1" minOccurs="0"/>
+                <xs:element name="enums" type="Enums" maxOccurs="1" minOccurs="0"/>
+                <xs:element name="errors" type="Errors" maxOccurs="1" minOccurs="0"/>
+            </xs:sequence>
+            <xs:attribute name="javaPackage" type="FreeFullNamePattern" use="required"/>
+            <xs:attribute name="version" type="Version" use="required"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

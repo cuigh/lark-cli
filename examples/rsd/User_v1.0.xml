@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    javaPackage: 设定生成代码的包路径
+    version: 0.2-旧规范, 1.0-新规范(注意 0.2 与 1.0 规范不完全兼容, 不能简单修改版本号)
+-->
+<msd xmlns="http://www.lark.com/rsd/1.0"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.lark.com/rsd/1.0 http://www.lark.com/rsd/1.0/Schema.xsd"
+     javaPackage="com.test.portal.service" version="1.0">
+    <!--扩展选项, 暂未启用-->
+    <!--<options>
+        <option name="package" value="mtime.portal.service" lang="java"/>
+    </options>-->
+    <!--服务定义
+        name: 服务名称(生成代码时会自动加上 Service 后缀)
+        alias: 服务别名, 如果指定, 则调用服务时会传递别名到服务端
+        description: 服务描述
+    -->
+    <service name="User" alias="" description="用户服务。" fail="FailFast">
+        <!--生成的服务接口需要额外引入的包路径-->
+        <imports>
+            <!--
+                path: 包路径
+                lang: 适用的语言, 如 java/c#/go
+            -->
+            <!--<import path="mtime.lark.pb.data.PageList" lang="java"/>-->
+        </imports>
+        <!--方法定义
+            name: 方法名称
+            alias: 方法别名, 如果指定, 则调用服务时会传递别名到服务端
+            description: 方法描述
+        -->
+        <method name="Login" alias="" description="登录" fail="FailOver">
+            <!--请求参数
+                multiple: 是否是多参数, 默认 false, 表示单 protobuf 对象
+            -->
+            <request multiple="false">
+                <field modifier="required" type="string" name="Email" order="1" description="登录邮箱"/>
+                <field modifier="required" type="string" name="Password" order="2" description="密码"/>
+            </request>
+            <!--响应参数
+                multiple: 是否是多参数, 默认 false, 表示单 protobuf 对象
+            -->
+            <response>
+                <field modifier="required" type="int32" name="Id" order="1" description="用户 ID"/>
+                <field modifier="required" type="string" name="Name" order="2" description="用户名称"/>
+            </response>
+            <!--响应错误码-->            
+            <errors>
+                <!--错误码
+                    name: 常量名称
+                    code: 常量整数值
+                    message: 错误描述
+                -->
+                <error name="BAD_CREDENTIAL" code="1001" message="电子邮箱或密码不正确"/>
+                <error name="USER_LOCKED" code="1002" message="帐号已锁定"/>
+                <error name="USER_DISABLED" code="1003" message="帐号已禁用"/>
+            </errors>
+        </method>
+        <method name="GetUser" description="获取用户信息">
+            <request>
+                <field modifier="required" type="int32" name="Id" order="1" description="用户 ID"/>
+            </request>
+            <response multiple="true">
+                <field type="User" name="User"/>
+            </response>
+        </method>        
+        <method name="FindUsers" description="查找用户">
+            <!--请求参数
+                extends: 基类, 泛型参数请使用方括号括起来
+            -->
+            <request extends="PageInfo">
+                <field modifier="required" type="int32" name="PageIndex" order="1" description="页码，从 1 开始" inherits="true"/>
+                <field modifier="required" type="int32" name="PageSize" order="2" description="每页大小" inherits="true"/>
+                <field modifier="optional" type="string" name="Name" order="3" description="用户名称"/>
+            </request>
+            <!--响应参数
+                extends: 基类, 泛型参数请使用方括号括起来
+            -->
+            <response extends="PageList[User]">
+                <field modifier="required" type="int32" name="TotalCount" order="1" description="总页数" inherits="true"/>
+                <field modifier="repeated" type="User" name="Items" order="2" kind="message" inherits="true"/>
+            </response>
+        </method>
+    </service>
+    <types>
+        <!--protobuf 文件需要额外引入的定义-->
+        <protoImports>
+            <!--<protoImport path="Common.proto.global"/>-->
+        </protoImports>
+        <!--生成的类型定义需要额外引入的包路径(DTO)-->
+        <imports>
+            <!--
+                path: 包路径
+                lang: 适用的语言, 如 java/c#/go
+            -->
+            <!--<import path="mtime.lark.pb.data.PageInfo" lang="java"/>-->
+            <import path="mtime.lark.pb.data.PageList" lang="java"/>
+            <import path="mtime.portal.service.constant.*" lang="java"/>
+        </imports>
+        <!--类型定义
+            name: 类型名称
+            description: 类型描述
+        -->
+        <type name="User" description="用户">
+            <!--字段定义
+                modifier: 修饰符, 有效值: required/optional/repeated
+                type: 字段类型
+                name: 字段名称, 各语言应该要自动转换名称的大小写
+                order: 顺序号
+                kind: 类型补充分类, 有效值: enum/message, 枚举类型必须指定 kind 属性
+                description: 字段描述
+                javaType: 扩展属性, 表示映射的 Java 类型
+                goType: 扩展属性, 表示映射的 Go 类型
+            -->
+            <field modifier="required" type="int32" name="Id" order="1" description="用户 ID"/>
+            <field modifier="required" type="int32" name="Name" order="2" description="用户名称"/>
+            <field modifier="required" type="bool" name="Admin" order="3" description="是否是超级管理员"/>
+            <field modifier="required" type="UserStatus" name="Status" order="4" description="用户状态" kind="enum"/>
+            <field modifier="required" type="int64" name="CreateTime" order="5" javaType="LocalDateTime" goType="time.Time" description="创建时间"/>
+            <field modifier="required" type="int64" name="ModifyTime" order="6" javaType="LocalDateTime" goType="time.Time" description="修改时间"/>
+        </type>
+    </types>
+    <enums>
+        <!--枚举定义
+            name: 类型名称
+            description: 类型描述
+        -->    
+        <enum name="UserStatus" description="用户状态">
+            <!--枚举值定义
+                name: 名称, 各语言应该要自动转换名称的大小写
+                value: 枚举值
+                description: 描述
+            -->    
+            <field name="NORMAL" value="1" description="正常"/>
+            <field name="LOCKED" value="2" description="锁定"/>
+            <field name="DISABLED" value="3" description="禁用"/>
+        </enum>
+    </enums>
+</msd>
