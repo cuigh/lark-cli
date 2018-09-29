@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/beevik/etree"
-	"github.com/cuigh/lark-cli/util/file"
+	"github.com/cuigh/lark/util/file"
 )
 
 // Pom Maven pom 文件

@@ -66,8 +66,8 @@ type headerInfo struct {
 	Version string `xml:"version,attr"`
 }
 
-// fieldInfo 基本字段定义
-type fieldInfo struct {
+// FieldInfo 基本字段定义
+type FieldInfo struct {
 	Name            string `xml:"name,attr"`
 	Modifier        string `xml:"modifier,attr"`
 	Type            string `xml:"type,attr"`

@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
     javaPackage: 设定生成代码的包路径
-    version: 0.2-旧规范, 1.0-新规范(注意 0.2 与 1.0 规范不完全兼容, 不能简单修改版本号)
+    version: 1.0
 -->
-<msd xmlns="http://www.lark.com/rsd/1.0"
+<msd xmlns="http://www.cuigh.com/rsd/1.0"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xsi:schemaLocation="http://www.lark.com/rsd/1.0 http://www.lark.com/rsd/1.0/Schema.xsd"
-     javaPackage="com.test.portal.service" version="1.0">
+     xsi:schemaLocation="http://www.cuigh.com/rsd/1.0 http://www.cuigh.com/rsd/1.0/Schema.xsd"
+     javaPackage="com.test.portal.contract" version="1.0">
     <!--扩展选项, 暂未启用-->
     <!--<options>
-        <option name="package" value="mtime.portal.service" lang="java"/>
+        <option name="package" value="com.test.portal.contract" lang="java"/>
     </options>-->
     <!--服务定义
         name: 服务名称(生成代码时会自动加上 Service 后缀)
         alias: 服务别名, 如果指定, 则调用服务时会传递别名到服务端
         description: 服务描述
     -->
-    <service name="User" alias="" description="用户服务。" fail="FailFast">
+    <service name="User" alias="" description="用户服务。" invoke="FailFast">
         <!--生成的服务接口需要额外引入的包路径-->
         <imports>
             <!--
                 path: 包路径
                 lang: 适用的语言, 如 java/c#/go
             -->
-            <!--<import path="mtime.lark.pb.data.PageList" lang="java"/>-->
+            <!--<import path="lark.pb.data.PageList" lang="java"/>-->
         </imports>
         <!--方法定义
             name: 方法名称
             alias: 方法别名, 如果指定, 则调用服务时会传递别名到服务端
             description: 方法描述
         -->
-        <method name="Login" alias="" description="登录" fail="FailOver">
+        <method name="Login" alias="" description="登录" invoke="FailOver">
             <!--请求参数
                 multiple: 是否是多参数, 默认 false, 表示单 protobuf 对象
             -->
@@ -94,9 +94,8 @@
                 path: 包路径
                 lang: 适用的语言, 如 java/c#/go
             -->
-            <!--<import path="mtime.lark.pb.data.PageInfo" lang="java"/>-->
-            <import path="mtime.lark.pb.data.PageList" lang="java"/>
-            <import path="mtime.portal.service.constant.*" lang="java"/>
+            <!--<import path="lark.pb.data.PageInfo" lang="java"/>-->
+            <import path="lark.pb.data.PageList" lang="java"/>
         </imports>
         <!--类型定义
             name: 类型名称
@@ -113,12 +112,12 @@
                 javaType: 扩展属性, 表示映射的 Java 类型
                 goType: 扩展属性, 表示映射的 Go 类型
             -->
-            <field modifier="required" type="int32" name="Id" order="1" description="用户 ID"/>
-            <field modifier="required" type="int32" name="Name" order="2" description="用户名称"/>
-            <field modifier="required" type="bool" name="Admin" order="3" description="是否是超级管理员"/>
-            <field modifier="required" type="UserStatus" name="Status" order="4" description="用户状态" kind="enum"/>
-            <field modifier="required" type="int64" name="CreateTime" order="5" javaType="LocalDateTime" goType="time.Time" description="创建时间"/>
-            <field modifier="required" type="int64" name="ModifyTime" order="6" javaType="LocalDateTime" goType="time.Time" description="修改时间"/>
+            <field type="int32" name="Id" order="1" description="用户 ID"/>
+            <field type="int32" name="Name" order="2" description="用户名称"/>
+            <field type="bool" name="Admin" order="3" description="是否是超级管理员"/>
+            <field type="UserStatus" name="Status" order="4" description="用户状态" kind="enum"/>
+            <field type="int64" name="CreateTime" order="5" javaType="LocalDateTime" goType="time.Time" description="创建时间"/>
+            <field type="int64" name="ModifyTime" order="6" javaType="LocalDateTime" goType="time.Time" description="修改时间"/>
         </type>
     </types>
     <enums>
@@ -132,9 +131,9 @@
                 value: 枚举值
                 description: 描述
             -->    
-            <field name="NORMAL" value="1" description="正常"/>
-            <field name="LOCKED" value="2" description="锁定"/>
-            <field name="DISABLED" value="3" description="禁用"/>
+            <field name="Normal" value="1" description="正常"/>
+            <field name="Locked" value="2" description="锁定"/>
+            <field name="Disabled" value="3" description="禁用"/>
         </enum>
     </enums>
 </msd>

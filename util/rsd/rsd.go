@@ -1,6 +1,7 @@
 package rsd
 
 import (
+	"sort"
 	"strings"
 
 	"github.com/cuigh/auxo/app"
@@ -62,6 +63,15 @@ func newDtoModel(pkg, name string, imports []*Import, types []*Type, errTypes []
 }
 
 func (m *DtoModel) initImports() {
+	m.addImports("lark.pb.annotation.ProtoField", "lark.pb.annotation.ProtoMessage", "lark.pb.field.FieldType",
+		"lombok.Getter", "lombok.Setter")
+	if len(m.Errors) > 0 {
+		m.addImports("lark.core.lang.Error")
+	}
+	for _, e := range m.Enums {
+		m.addImports(m.Package + ".constant." + e.Name)
+	}
+
 	checks := map[string]bool{
 		"List":          false,
 		"ZonedDateTime": false,
@@ -106,6 +116,10 @@ func (m *DtoModel) initImports() {
 	if checks["BigDecimal"] {
 		m.addImports("java.math.BigDecimal")
 	}
+
+	sort.Slice(m.Imports, func(i, j int) bool {
+		return m.Imports[i].Path < m.Imports[j].Path
+	})
 }
 
 func (m *DtoModel) addImports(pathes ...string) {
@@ -144,7 +158,7 @@ type Service struct {
 type Method struct {
 	Name        string
 	Alias       string
-	Fail        string
+	Invoke      string
 	Description string
 	Request     []*Parameter
 	Response    *Parameter
@@ -206,7 +220,7 @@ type Field struct {
 	Annotations []string
 }
 
-func newField(fi *fieldInfo, kind string) (f *Field) {
+func newField(fi *FieldInfo, kind string) (f *Field) {
 	f = &Field{
 		Name:        fi.Name,
 		Modifier:    fi.Modifier,

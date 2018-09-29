@@ -7,8 +7,8 @@ import (
 
 	"github.com/cuigh/auxo/app"
 	"github.com/cuigh/auxo/app/flag"
-	"github.com/cuigh/lark-cli/tpl"
-	"github.com/cuigh/lark-cli/util/rsd"
+	"github.com/cuigh/lark/tpl"
+	"github.com/cuigh/lark/util/rsd"
 )
 
 // Gen create `gen` sub command
@@ -50,7 +50,7 @@ func GenRPC() *app.Command {
 			// service
 			if sm := d.GetServiceModel(); sm != nil {
 				files := make(map[string]string)
-				files[filepath.Join(dir, "iface", sm.Name+"Service.java")] = tpl.MSCService
+				files[filepath.Join(dir, "iface", sm.Name+"Service.java")] = "rpc/Service.java"
 				err := tpl.Execute(files, sm)
 				if err != nil {
 					return err
@@ -61,7 +61,7 @@ func GenRPC() *app.Command {
 			enums := d.GetEnumModels()
 			for _, em := range enums {
 				files := make(map[string]string)
-				files[filepath.Join(dir, "constant", em.Name+".java")] = tpl.MSCEnum
+				files[filepath.Join(dir, "constant", em.Name+".java")] = "rpc/Enum.java"
 
 				// err = tpl.ExecuteWriter(os.Stdout, files, e)
 				err := tpl.Execute(files, em)
@@ -73,7 +73,7 @@ func GenRPC() *app.Command {
 			// dto
 			if dm := d.GetDtoModel(); dm != nil {
 				files := make(map[string]string)
-				files[filepath.Join(dir, "dto", dm.Name+"Dto.java")] = tpl.MSCDto
+				files[filepath.Join(dir, "dto", dm.Name+"Dto.java")] = "rpc/Dto.java"
 				err := tpl.Execute(files, dm)
 				if err != nil {
 					return err

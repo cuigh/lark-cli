@@ -10,9 +10,9 @@ import (
 	"github.com/cuigh/auxo/app/flag"
 	"github.com/cuigh/auxo/config"
 	"github.com/cuigh/auxo/errors"
-	"github.com/cuigh/lark-cli/tpl"
-	"github.com/cuigh/lark-cli/util/file"
-	"github.com/cuigh/lark-cli/util/pom"
+	"github.com/cuigh/lark/tpl"
+	"github.com/cuigh/lark/util/file"
+	"github.com/cuigh/lark/util/pom"
 )
 
 func New() *app.Command {
@@ -42,6 +42,10 @@ func NewProject() *app.Command {
 			return err
 		}
 
+		if args.Group == "" {
+			return errors.New("group is missing")
+		}
+
 		wd, err := os.Getwd()
 		if err != nil {
 			return errors.Wrap(err, "acquire work directory failed")
@@ -69,9 +73,9 @@ func NewProject() *app.Command {
 
 		// create files
 		files := make(map[string]string)
-		files[filepath.Join(dir, "pom.xml")] = tpl.ProjectPomXML
-		files[filepath.Join(dir, "README.md")] = tpl.ReadMe
-		files[filepath.Join(dir, ".gitignore")] = tpl.GitIgnore
+		files[filepath.Join(dir, "pom.xml")] = "project/pom.xml"
+		files[filepath.Join(dir, "README.md")] = "project/README.md"
+		files[filepath.Join(dir, ".gitignore")] = "project/gitignore"
 		if err = tpl.Execute(files, data); err != nil {
 			return err
 		}
@@ -276,7 +280,7 @@ func NewContract() *app.Command {
 		files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("iface", "TestService.java").String()] = tpl.TestService
 		files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("spring", "ServiceAutoConfig.java").String()] = tpl.ServiceAutoConfig
 		files[filepath.Join(moduleDir, "src", "main", "resources", "META-INF", "spring.factories")] = tpl.SpringFactories
-		files[filepath.Join(moduleDir, "src", "main", "rsd", "TestService.xml")] = tpl.TestServiceXML
+		files[filepath.Join(moduleDir, "src", "main", "services", "TestService.xml")] = tpl.TestServiceXML
 		if err = tpl.Execute(files, data); err != nil {
 			return err
 		}

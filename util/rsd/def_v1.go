@@ -21,7 +21,7 @@ type definitionV1 struct {
 		Methods     []*struct {
 			Name        string `xml:"name,attr"`
 			Alias       string `xml:"alias,attr"`
-			Fail        string `xml:"fail,attr"`
+			Invoke      string `xml:"invoke,attr"`
 			Description string `xml:"description,attr"`
 			Request     *struct {
 				Multiple bool           `xml:"multiple,attr"`
@@ -50,7 +50,7 @@ type definitionV1 struct {
 
 // fieldInfoV1 字段定义
 type fieldInfoV1 struct {
-	*fieldInfo
+	*FieldInfo
 	Kind     string `xml:"kind,attr"`
 	Inherits bool   `xml:"inherits,attr"`
 }
@@ -88,7 +88,7 @@ func (d *definitionV1) GetServiceModel() *ServiceModel {
 		m := &Method{
 			Name:        mi.Name,
 			Alias:       mi.Alias,
-			Fail:        mi.Fail,
+			Invoke:      mi.Invoke,
 			Description: mi.Description,
 		}
 		if mi.Request != nil {
@@ -195,7 +195,7 @@ func (d *definitionV1) validateFields(typeName string, fields []*fieldInfoV1) er
 func (d *definitionV1) createFields(infos []*fieldInfoV1) (fields []*Field) {
 	for _, fi := range infos {
 		if !fi.Inherits {
-			f := newField(fi.fieldInfo, fi.Kind)
+			f := newField(fi.FieldInfo, fi.Kind)
 			fields = append(fields, f)
 		}
 	}

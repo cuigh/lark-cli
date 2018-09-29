@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           targetNamespace="http://www.lark.com/rsd/1.0"
-           xmlns="http://www.lark.com/rsd/1.0"
+           targetNamespace="http://www.cuigh.com/rsd/1.0"
+           xmlns="http://www.cuigh.com/rsd/1.0"
            elementFormDefault="qualified">
 
     <xs:annotation>
@@ -151,6 +151,7 @@
         <xs:attribute name="name" type="PascalNamePattern" use="required"/>
         <xs:attribute name="alias" type="xs:string"/>
         <xs:attribute name="description" type="xs:string"/>
+        <xs:attribute name="invoke" type="xs:string"/>
     </xs:complexType>
     
     <xs:complexType name="Service">
@@ -164,7 +165,6 @@
     </xs:complexType>
     <!-- type相关类型定义 -->
     <xs:complexType name="TypeField">
-        <xs:attribute name="modifier" type="FieldModifierAttrType" use="required"/>
         <xs:attribute name="type" type="FieldAttrType" use="required"/>
         <xs:attribute name="name" type="PascalNamePattern" use="required"/>
         <xs:attribute name="order" type="FieldAttrOrder" use="required"/>

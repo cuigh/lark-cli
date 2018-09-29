@@ -1,0 +1,21 @@
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs
+hs_err_pid*
+
+# Build results
+target
+
+# IDEA files
+.idea
+*.iml
+
+# Eclipse files
+.settings
+.classpath
+.project

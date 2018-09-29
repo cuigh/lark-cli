@@ -6,17 +6,10 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"strings"
 	"text/template"
-)
 
-const (
-	// ReadMe 项目自述文件
-	ReadMe = "readme.md"
-	// GitIgnore Java 项目的 Git 仓库忽略文件
-	GitIgnore = ".gitignore"
-	// ProjectPomXML 项目 pom 文件
-	ProjectPomXML = "project:pom.xml"
+	"github.com/cuigh/auxo/ext/texts"
+	"github.com/gobuffalo/packr"
 )
 
 // app
@@ -40,7 +33,6 @@ const (
 // service
 const (
 	// ServiceBootstrap RPC 服务程序启动类模板
-	ServiceBootstrap         = "service:Bootstrap.java"
 	TestServiceImpl          = "service:TestServiceImpl.java"
 	TestServiceTest          = "service:TestServiceTest.java"
 	ServiceTestAppProperties = "service:test:app.properties"
@@ -48,21 +40,18 @@ const (
 
 // msg
 const (
-	MsgBootstrap    = "msg:Bootstrap.java"
 	TestHandler     = "msg:TestHandler.java"
 	TestHandlerTest = "msg:TestHandlerTest.java"
 )
 
 // task
 const (
-	TaskBootstrap = "task:Bootstrap.java"
 	TestTask      = "task:TestTask.java"
 	TestTaskTest  = "task:TestTaskTest.java"
 )
 
 // web
 const (
-	WebBootstrap     = "web:Bootstrap.java"
 	TestController   = "web:TestController.java"
 	WebAppConfig     = "web:app.conf"
 	WebAppProperties = "web:app.properties"
@@ -86,58 +75,10 @@ const (
 	ServiceAutoConfig = "ServiceAutoConfig.java"
 )
 
-// msc
-const (
-	MSCEnum    = "msc:Enum.java"
-	MSCService = "msc:Service.java"
-	MSCDto     = "msc:Dto.java"
-)
+var box packr.Box
 
-var templates = map[string]string{
-	// project
-	ReadMe:        tplReadMe,
-	GitIgnore:     tplGitIgnore,
-	ProjectPomXML: tplProjectPomXML,
-	// app module
-	AppPomXML:     tplAppPomXML,
-	BuildJSON:     tplBuildJSON,
-	AssemblyXML:   tplAssemblyXML,
-	PomProperties: tplPomProperties,
-	AppConfig:     tplAppConfig,
-	TestDao:       tplTestDao,
-	TestBiz:       tplTestBiz,
-	TestEntity:    tplTestEntity,
-	AbstractTest:  tplAbstractTest,
-	// service module
-	ServiceBootstrap:         tplServiceBootstrap,
-	TestServiceImpl:          tplTestServiceImpl,
-	TestServiceTest:          tplTestServiceTest,
-	ServiceTestAppProperties: tplServiceTestAppProperties,
-	// msg module
-	MsgBootstrap:    tplMsgBootstrap,
-	TestHandler:     tplTestHandler,
-	TestHandlerTest: tplTestHandlerTest,
-	// task module
-	TaskBootstrap: tplTaskBootstrap,
-	TestTask:      tplTestTask,
-	TestTaskTest:  tplTestTaskTest,
-	// web module
-	WebBootstrap:     tplWebBootstrap,
-	TestController:   tplTestController,
-	WebAppConfig:     tplWebAppConfig,
-	WebAppProperties: tplWebAppProperties,
-	// contract module
-	TestService:       tplTestService,
-	TestType:          tplTestType,
-	TestDto:           tplTestDto,
-	TestServiceXML:    tplTestServiceXML,
-	ContractPomXML:    tplContractPomXML,
-	ServiceAutoConfig: tplServiceAutoConfig,
-	SpringFactories:   tplSpringFactories,
-	// msc
-	MSCEnum:    tplMSCEnum,
-	MSCDto:     tplMSCDto,
-	MSCService: tplMSCService,
+func SetBox(b packr.Box) {
+	box = b
 }
 
 // Execute 执行模板并输出到文件
@@ -209,23 +150,13 @@ func executeWriter(w io.Writer, tn string, data interface{}) error {
 }
 
 func getTemplate(tplName string) *template.Template {
-	funcs := template.FuncMap{
-		"camel": func(s string) string {
-			if s == "" {
-				return s
-			}
-			return strings.ToLower(s[:1]) + s[1:]
-		},
-		"pascal": func(s string) string {
-			if s == "" {
-				return s
-			}
-			return strings.ToUpper(s[:1]) + s[1:]
-		},
-		"upper": strings.ToUpper,
-		"lower": strings.ToLower,
+	fm := template.FuncMap{
+		"camel":  func(s string) string { return texts.Rename(s, texts.Camel) },
+		"pascal": func(s string) string { return texts.Rename(s, texts.Pascal) },
+		"upper":  func(s string) string { return texts.Rename(s, texts.Upper) },
+		"lower":  func(s string) string { return texts.Rename(s, texts.Lower) },
 	}
-	return template.Must(template.New("T").Funcs(funcs).Parse(templates[tplName]))
+	return template.Must(template.New("T").Funcs(fm).Parse(box.String(tplName)))
 }
 
 // type Container struct {
