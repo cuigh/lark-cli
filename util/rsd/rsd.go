@@ -258,7 +258,7 @@ func newField(fi *FieldInfo, kind string) (f *Field) {
 			}
 		} else {
 			f.Type = fi.Type
-			f.FieldType = "OBJECT"
+			f.FieldType = "MESSAGE"
 			if fi.Modifier == "repeated" {
 				f.FullType = "List<" + f.Type + ">"
 			} else {

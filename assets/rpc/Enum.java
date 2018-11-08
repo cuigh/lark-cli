@@ -23,7 +23,7 @@ public enum	{{.Name}} implements EnumValuable, EnumTitlable {
     private int value;
     private String title;
 
-    private {{.Name}}(int value, String title) {
+    {{.Name}}(int value, String title) {
         this.value = value;
         this.title = title;
     }
