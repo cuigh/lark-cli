@@ -8,6 +8,6 @@ A tool for developing [lark](https://github.com/cuigh/lark) based applications.
 
 ## Build
 
-You need Go v1.11+ to build **lark-cli**
+You need Go v1.11+ and [packr](https://github.com/gobuffalo/packr) v1 to build **lark-cli**
 
-    go build
+    packr build
