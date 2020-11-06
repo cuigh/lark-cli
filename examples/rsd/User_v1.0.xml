@@ -118,6 +118,7 @@
             <field type="UserStatus" name="Status" order="4" description="用户状态" kind="enum"/>
             <field type="int64" name="CreateTime" order="5" javaType="LocalDateTime" goType="time.Time" description="创建时间"/>
             <field type="int64" name="ModifyTime" order="6" javaType="LocalDateTime" goType="time.Time" description="修改时间"/>
+            <field type="map[string, Book]" name="books" order="7" description="书籍列表"/>
         </type>
     </types>
     <enums>

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Task
-public class TestTask implements Executor {
+public class TestExecutor implements Executor {
     private static final Logger LOGGER= LoggerFactory.getLogger(TestTask.class);
 
     @Autowired

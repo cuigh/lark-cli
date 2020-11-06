@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: {{.ArtifactID}}
+
+server:
+  port: 8001
+
+etcd:
+  address: http://etcd:2379
+
+info.lark.version: @lark.version@
+
+lark:
+  application:
+    registry: etcd
+  rpc:
+    server:
+      version: @project.version@
+      register: true
+      address: ":9001"
+
+---
+spring:
+  profiles: default

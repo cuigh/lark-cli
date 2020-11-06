@@ -150,13 +150,18 @@ func executeWriter(w io.Writer, tn string, data interface{}) error {
 }
 
 func getTemplate(tplName string) *template.Template {
+	s := box.String(tplName)
+	if s == "" {
+		panic("template not found: " + tplName)
+	}
+
 	fm := template.FuncMap{
 		"camel":  func(s string) string { return texts.Rename(s, texts.Camel) },
 		"pascal": func(s string) string { return texts.Rename(s, texts.Pascal) },
 		"upper":  func(s string) string { return texts.Rename(s, texts.Upper) },
 		"lower":  func(s string) string { return texts.Rename(s, texts.Lower) },
 	}
-	return template.Must(template.New("T").Funcs(fm).Parse(box.String(tplName)))
+	return template.Must(template.New("T").Funcs(fm).Parse(s))
 }
 
 // type Container struct {

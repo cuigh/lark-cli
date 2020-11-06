@@ -161,36 +161,31 @@ func NewModule(moduleType string) *app.Command {
 		dirs = append(dirs, filepath.Join(wd, name, "src", "test", "java"))
 		file.CreateDir(dirs...)
 
+		fp := func(name string) string {
+			return fmt.Sprintf("modules/%s/%s", moduleType, name)
+		}
+
 		// create files
 		files := make(map[string]string)
-		files[filepath.Join(moduleDir, "pom.xml")] = tpl.AppPomXML
-		files[filepath.Join(moduleDir, "build", "build.json")] = tpl.BuildJSON
-		files[filepath.Join(moduleDir, "build", "assembly.xml")] = tpl.AssemblyXML
-		files[filepath.Join(moduleDir, "build", "pom.properties")] = tpl.PomProperties
-		if moduleType == "web" {
-			files[filepath.Join(moduleDir, "src", "main", "resources", "etc", "app.conf")] = tpl.WebAppConfig
-		} else {
-			files[filepath.Join(moduleDir, "src", "main", "resources", "etc", "app.conf")] = tpl.AppConfig
-		}
-		files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("Bootstrap.java").String()] = fmt.Sprintf("%v:Bootstrap.java", moduleType)
-		files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("dao", "TestDao.java").String()] = tpl.TestDao
-		files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("biz", "TestBiz.java").String()] = tpl.TestBiz
-		files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("entity", "TestObject.java").String()] = tpl.TestEntity
-		files[file.NewPath(moduleDir, "src", "test", "java").Join(strings.Split(args.Package, ".")...).Join("AbstractTest.java").String()] = tpl.AbstractTest
+		files[filepath.Join(moduleDir, "pom.xml")] = fp("pom.xml")
+		files[filepath.Join(moduleDir, "src", "main", "resources", "application.yml")] = fp("application.yml")
+		files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("Bootstrap.java").String()] = fp("Bootstrap.java")
 		switch moduleType {
 		case "service":
-			files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("impl", "TestServiceImpl.java").String()] = tpl.TestServiceImpl
-			files[file.NewPath(moduleDir, "src", "test", "java").Join(strings.Split(args.Package, ".")...).Join("TestServiceTest.java").String()] = tpl.TestServiceTest
-			files[filepath.Join(moduleDir, "src", "test", "resources", "etc", "app.properties")] = tpl.ServiceTestAppProperties
+			files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("dao", "TestDao.java").String()] = fp("TestDao.java")
+			files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("biz", "TestBiz.java").String()] = fp("TestBiz.java")
+			files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("entity", "TestObject.java").String()] = fp("TestObject.java")
+			files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("impl", "TestServiceImpl.java").String()] = fp("TestServiceImpl.java")
+			files[file.NewPath(moduleDir, "src", "test", "java").Join(strings.Split(args.Package, ".")...).Join("TestServiceTests.java").String()] = fp("TestServiceTests.java")
 		case "msg":
-			files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("handler", "TestHandler.java").String()] = tpl.TestHandler
-			files[file.NewPath(moduleDir, "src", "test", "java").Join(strings.Split(args.Package, ".")...).Join("handler", "TestHandlerTest.java").String()] = tpl.TestHandlerTest
+			files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("handler", "TestHandler.java").String()] = fp("TestHandler.java")
+			files[file.NewPath(moduleDir, "src", "test", "java").Join(strings.Split(args.Package, ".")...).Join("handler", "TestHandlerTests.java").String()] = fp("TestHandlerTests.java")
 		case "task":
-			files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("executor", "TestTask.java").String()] = tpl.TestTask
-			files[file.NewPath(moduleDir, "src", "test", "java").Join(strings.Split(args.Package, ".")...).Join("executor", "TestTaskTest.java").String()] = tpl.TestTaskTest
+			files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("executor", "TestExecutor.java").String()] = fp("TestExecutor.java")
+			files[file.NewPath(moduleDir, "src", "test", "java").Join(strings.Split(args.Package, ".")...).Join("executor", "TestExecutorTests.java").String()] = fp("TestExecutorTests.java")
 		case "web":
-			files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("controller", "TestController.java").String()] = tpl.TestController
-			files[filepath.Join(moduleDir, "src", "main", "resources", "etc", "app.properties")] = tpl.WebAppProperties
+			files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("controller", "TestController.java").String()] = fp("TestController.java")
+			files[file.NewPath(moduleDir, "src", "test", "java").Join(strings.Split(args.Package, ".")...).Join("executor", "TestControllerTests.java").String()] = fp("TestControllerTests.java")
 		}
 		if err = tpl.Execute(files, data); err != nil {
 			return err
@@ -272,15 +267,14 @@ func NewContract() *app.Command {
 			return fmt.Errorf("directory already exist: %v", moduleDir)
 		}
 
-		// todo: create files
 		files := make(map[string]string)
-		files[filepath.Join(moduleDir, "pom.xml")] = tpl.ContractPomXML
-		files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("constant", "TestType.java").String()] = tpl.TestType
-		files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("dto", "TestDto.java").String()] = tpl.TestDto
-		files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("iface", "TestService.java").String()] = tpl.TestService
-		files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("spring", "ServiceAutoConfig.java").String()] = tpl.ServiceAutoConfig
-		files[filepath.Join(moduleDir, "src", "main", "resources", "META-INF", "spring.factories")] = tpl.SpringFactories
-		files[filepath.Join(moduleDir, "src", "main", "services", "TestService.xml")] = tpl.TestServiceXML
+		files[filepath.Join(moduleDir, "pom.xml")] = "modules/contract/pom.xml"
+		files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("constant", "TestType.java").String()] = "modules/contract/TestType.java"
+		files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("dto", "TestDto.java").String()] = "modules/contract/TestDto.java"
+		files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("iface", "TestService.java").String()] = "modules/contract/TestService.java"
+		files[file.NewPath(moduleDir, "src", "main", "java").Join(strings.Split(args.Package, ".")...).Join("config", "ProxyConfigurer.java").String()] = "modules/contract/ProxyConfigurer.java"
+		files[filepath.Join(moduleDir, "src", "main", "resources", "META-INF", "spring.factories")] = "modules/contract/spring.factories"
+		files[filepath.Join(moduleDir, "src", "main", "services", "TestService.xml")] = "modules/contract/TestService.xml"
 		if err = tpl.Execute(files, data); err != nil {
 			return err
 		}

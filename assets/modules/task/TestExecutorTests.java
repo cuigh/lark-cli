@@ -8,9 +8,9 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-public class TestTaskTests {
+public class TestExecutorTests {
     @Autowired
-    private TestTask testTask;
+    private TestExecutor testExecutor;
 
     @Test
     public void testExecute() throws Exception {
@@ -22,6 +22,6 @@ public class TestTaskTests {
         param.Args.add(arg);
 
         TaskContext ctx = new TaskContext(param);
-        testTask.execute(ctx);
+        testExecutor.execute(ctx);
     }
 }

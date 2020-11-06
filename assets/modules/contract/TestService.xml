@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
     javaPackage: 设定生成代码的包路径
-    version: 0.2-旧规范, 1.0-新规范(注意 0.2 与 1.0 规范不完全兼容, 不能简单修改版本号)
+    version: 协议版本，目前只能是1.0
 -->
 <rsd javaPackage="com.test.demo.service" version="1.0">
     <!--服务定义
@@ -24,10 +24,7 @@
             description: 方法描述
         -->
         <method name="Hello" alias="" description="hello">
-            <!--请求参数
-                multiple: 是否是多参数, 默认 false, 表示单 protobuf 对象
-            -->
-            <request multiple="false">
+            <request>
                 <field modifier="required" type="int32" name="Id" order="1" description="ID"/>
                 <field modifier="optional" type="TestType" name="Type" order="2" kind="enum"/>
                 <field modifier="optional" type="int64" name="Time" order="3" javaType="LocalDateTime"/>

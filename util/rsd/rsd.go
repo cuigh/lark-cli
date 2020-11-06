@@ -1,6 +1,7 @@
 package rsd
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 
@@ -74,6 +75,7 @@ func (m *DtoModel) initImports() {
 
 	checks := map[string]bool{
 		"List":          false,
+		"Map":           false,
 		"ZonedDateTime": false,
 		"LocalDateTime": false,
 		"LocalDate":     false,
@@ -84,6 +86,9 @@ func (m *DtoModel) initImports() {
 		for _, f := range t.Fields {
 			if f.Modifier == "repeated" {
 				checks["List"] = true
+			}
+			if strings.HasPrefix(f.FullType, "Map<") {
+				checks["Map"] = true
 			}
 
 			matchType := ""
@@ -100,6 +105,9 @@ func (m *DtoModel) initImports() {
 	}
 	if checks["List"] {
 		m.addImports("java.util.ArrayList", "java.util.Collection", "java.util.List")
+	}
+	if checks["Map"] {
+		m.addImports("java.util.Map")
 	}
 	if checks["ZonedDateTime"] {
 		m.addImports("java.time.ZonedDateTime")
@@ -256,6 +264,10 @@ func newField(fi *FieldInfo, kind string) (f *Field) {
 			} else {
 				f.FullType = f.Type
 			}
+		} else if strings.HasPrefix(fi.Type, "map[") {
+			f.Type = fmt.Sprintf("Map<%s>", buildMapTypes(fi.Type[4:len(fi.Type)-1]))
+			f.FieldType = "MESSAGE"
+			f.FullType = f.Type
 		} else {
 			f.Type = fi.Type
 			f.FieldType = "MESSAGE"
@@ -267,6 +279,22 @@ func newField(fi *FieldInfo, kind string) (f *Field) {
 		}
 	}
 	return
+}
+
+func buildMapTypes(types string) string {
+	arr := strings.Split(types, ",")
+	if len(arr) != 2 {
+		panic("invalid map types: " + types)
+	}
+
+	for i := 0; i < 2; i++ {
+		arr[i] = strings.TrimSpace(arr[i])
+		if tm, ok := javaTypes[arr[i]]; ok {
+			arr[i] = tm.ObjectType
+		}
+	}
+
+	return strings.Join(arr, ", ")
 }
 
 // Enum 枚举信息
